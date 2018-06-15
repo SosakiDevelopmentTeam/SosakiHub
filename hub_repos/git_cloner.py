@@ -13,6 +13,10 @@ class ByondRepo:
         else:
             self.repo = Repo(self.path)
 
+        if not self.is_byond():
+            self.remove_repo()
+            raise Exception("Not BYOND repo")
+
     def is_byond(self):
         for file in os.listdir(self.path):
             if file.endswith(".dme"):
