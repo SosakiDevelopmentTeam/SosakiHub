@@ -9,7 +9,10 @@ async def main():
     ...
 
 if __name__ == "__main__":
-    loop = asyncio.ProactorEventLoop()
-    asyncio.set_event_loop(loop)
+    if is_win:
+        loop = asyncio.ProactorEventLoop()
+        asyncio.set_event_loop(loop)
+    else:
+        loop = asyncio.get_event_loop()
     tasks = [loop.create_task(main())]
     loop.run_until_complete(asyncio.wait(tasks))

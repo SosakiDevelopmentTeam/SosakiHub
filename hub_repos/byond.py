@@ -3,7 +3,8 @@ from asyncio import subprocess
 import os.path as osp
 import os
 
-DREAMMAKER = "DreamMaker" if os.name == "posix" else osp.join(os.environ["BYOND_BIN"], "dm.exe")
+is_win = 0 if os.name == "posix" else 1
+DREAMMAKER = f'"{osp.join(os.environ["BYOND_BIN"], "dm.exe")}"' if is_win else "DreamMaker"
 
 class BYOND:
 
@@ -12,6 +13,6 @@ class BYOND:
         self.proc = None
 
     async def build(self):
-        proc = await subprocess.create_subprocess_exec(f'"{DREAMMAKER}" {self.path} -max_errors 10', stdout=subprocess.PIPE)
+        proc = await subprocess.create_subprocess_exec(f'{DREAMMAKER} {self.path} -max_errors 10', stdout=subprocess.PIPE)
         stdout, stderr = await proc.communiate()
         return stdout
