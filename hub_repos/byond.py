@@ -29,7 +29,7 @@ class BYOND:
 
     async def build(self):
         yield {"output": None, "return_code": BUILDING}
-        proc = await subprocess.create_subprocess_exec(f'{DREAMMAKER} {self.path} -max_errors 10',
+        proc = await subprocess.create_subprocess_shell(f'{DREAMMAKER} {self.path} -max_errors 10',
                                                        stdout=subprocess.PIPE)
         stdout, stderr = await proc.communiate()
         await proc.terminate()
@@ -38,5 +38,5 @@ class BYOND:
     async def start(self, parameters: dict = None):
         build_f = osp.join(osp.dirname(self.path), f"{osp.basename(self.path)[:-4]}.dmb")
         if osp.isfile(build_f):
-            proc = await subprocess.create_subprocess_exec(f'{DREAMDAEMON} {build_f} {dict_to_params(parameters)}',
+            proc = await subprocess.create_subprocess_shell(f'{DREAMDAEMON} {build_f} {dict_to_params(parameters)}',
                                                            stdout=subprocess.PIPE)
