@@ -1,12 +1,29 @@
-from hub_repos import *
-from aiohttp import web
 import asyncio
+import base64
 
-async def handle(request):
-    ...
+from aiohttp_session import setup
+from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
-async def main():
-    ...
+from cryptography import fernet
+
+from api import *
+from hub_repos import *
+import weakref
+
+def run_app(loop):
+    app = web.Application(loop=loop)
+    # Sessions storage key generation
+    fernet_key = fernet.Fernet.generate_key()
+    secret_key = base64.urlsafe_b64decode(fernet_key)
+    setup(app, EncryptedCookieStorage(secret_key, cookie_name="sosaki_session", max_age=300))
+
+    app['db'] = DB("database.db")
+    app['websockets'] = weakref.WeakSet()
+    app.router.add_routes(routes)
+    app.on_shutdown.append(on_shutdown)
+    web.run_app(app, host='localhost', port=8080)
+    return app
+
 
 if __name__ == "__main__":
     if is_win:
@@ -14,5 +31,8 @@ if __name__ == "__main__":
         asyncio.set_event_loop(loop)
     else:
         loop = asyncio.get_event_loop()
-    tasks = [loop.create_task(main())]
-    loop.run_until_complete(asyncio.wait(tasks))
+
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(levelname)s %(message)s')
+
+    run_app(loop)

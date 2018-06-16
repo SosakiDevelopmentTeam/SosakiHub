@@ -1,0 +1,8 @@
+asyncio
+cchardet
+aiodns
+aiohttp
+aiosqlite
+cryptography
+aiohttp_session
+gitpython

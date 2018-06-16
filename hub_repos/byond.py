@@ -31,18 +31,19 @@ class BYOND:
     async def build(self):
         yield {"output": None, "return_code": BUILDING}
         proc = await subprocess.create_subprocess_shell(f'{DREAMMAKER} {self.path} -max_errors 10',
-                                                       stdout=subprocess.PIPE)
-        stdout, stderr = await proc.communicate() # Actually being terminated after that
+                                                        stdout=subprocess.PIPE)
+        stdout, stderr = await proc.communicate()  # Actually being terminated after that
         yield {"output": stdout, "return_code": proc.returncode}
 
     async def start(self, parameters: dict = None):
         yield {"output": None, "return_code": STARTING}
         build_f = osp.join(osp.dirname(self.path), f"{osp.basename(self.path)[:-4]}.dmb")
         if osp.isfile(build_f):
-            self.proc = await subprocess.create_subprocess_shell(f'{DREAMDAEMON} {build_f} {dict_to_params(parameters)} -logself',
-                                                           stdout=subprocess.PIPE)
+            self.proc = await subprocess.create_subprocess_shell(
+                f'{DREAMDAEMON} {build_f} {dict_to_params(parameters)} -logself',
+                stdout=subprocess.PIPE)
             stdout, stderr = await self.proc.communicate()
-            yield {"output": stdout, "return_code": self.proc.returncode} # Means that it is crashed
+            yield {"output": stdout, "return_code": self.proc.returncode}  # Means that it is crashed
             return
         yield {"output": "No such file or directory", "return_code": 1}
 
