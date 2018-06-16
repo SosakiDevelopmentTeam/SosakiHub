@@ -5,6 +5,7 @@ import os
 from types import *
 
 BUILDING = 0xA
+STARTING = 0xA
 
 is_win = 0 if os.name == "posix" else 1
 DREAMMAKER = f'"{osp.join(os.environ["BYOND_BIN"], "dm.exe")}"' if is_win else "DreamMaker"
@@ -36,7 +37,11 @@ class BYOND:
         yield {"output": stdout, "return_code": proc.returncode}
 
     async def start(self, parameters: dict = None):
+        yield {"output": None, "return_code": STARTING}
         build_f = osp.join(osp.dirname(self.path), f"{osp.basename(self.path)[:-4]}.dmb")
         if osp.isfile(build_f):
             proc = await subprocess.create_subprocess_shell(f'{DREAMDAEMON} {build_f} {dict_to_params(parameters)}',
                                                            stdout=subprocess.PIPE)
+            stdout, stderr = await proc.communicate()
+            yield {"output": stdout, "return_code": proc.returncode}
+        yield {"output": "No such file or directory", "return_code": 1}
