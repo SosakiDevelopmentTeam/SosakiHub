@@ -14,7 +14,7 @@ DREAMDAEMON = f'"{osp.join(os.environ["BYOND_BIN"], "dreamdaemon.exe")}"' if is_
 
 def dict_to_params(val: dict, l: LambdaType = lambda x: ...) -> str:
     s = ""
-    if not len(val):
+    if not val or not len(val):
         return s
     for key in val:
         if l(key):
