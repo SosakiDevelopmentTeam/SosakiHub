@@ -32,7 +32,7 @@ class BYOND:
         yield {"output": None, "return_code": BUILDING}
         proc = await subprocess.create_subprocess_shell(f'{DREAMMAKER} {self.path} -max_errors 10',
                                                        stdout=subprocess.PIPE)
-        stdout, stderr = await proc.communiate()
+        stdout, stderr = await proc.communicate()
         await proc.terminate()
         yield {"output": stdout, "return_code": proc.returncode}
 
