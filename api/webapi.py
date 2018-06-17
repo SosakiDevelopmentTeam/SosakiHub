@@ -50,26 +50,23 @@ async def on_shutdown(app: web.Application):
 
 @routes.get("/")
 async def ws_handler(request: web.Request):
-    # session = await get_session(request) # Maybe because of session??
+    session = await get_session(request) # Maybe because of session??
     ws = web.WebSocketResponse()
 
     await ws.prepare(request)
 
+    if ws not in request.app['sockets']:
+        request.app['sockets'].append(ws)
 
-    request.app['sockets'].append(ws)
-
-    async for msg in ws:
-        data = await ws.receive_json()
-        ws.send_json(await methods.call(request, data))
-
-    request.app['sockets'].remove(ws)
+    data = await ws.receive_json()
+    ws.send_json(await methods.call(request, data))
 
 
 
 @methods.add("login")
 async def authorize(request: web.Request, data: dict):
     session = await get_session(request)
-    if session['verified']:
+    if 'verified' in session and session['verified']:
         return {"type": "message", "content": "Already logged, opening panel..."}
 
     if 'login' not in data or not 'password' in data:
