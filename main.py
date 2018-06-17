@@ -8,7 +8,6 @@ from cryptography import fernet
 
 from api import *
 from hub_repos import *
-import weakref
 
 if not is_win:
     import uvloop
@@ -22,7 +21,7 @@ def run_app(loop):
     setup(app, EncryptedCookieStorage(secret_key, cookie_name="sosaki_session", max_age=300))
 
     app['db'] = DB("database.db")
-    app['websockets'] = weakref.WeakSet()
+    app['sockets'] = []
     app.router.add_routes(routes)
     app.on_shutdown.append(on_shutdown)
     web.run_app(app, host='localhost', port=8080)

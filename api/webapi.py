@@ -45,19 +45,24 @@ routes = web.RouteTableDef()
 methods = APIMethods()
 
 async def on_shutdown(app: web.Application):
-    for ws in set(app['websockets']):
+    for ws in set(app['sockets']):
         await ws.close(code=WSCloseCode.GOING_AWAY, message="Hub shutting down...")
 
 @routes.get("/")
 async def ws_handler(request: web.Request):
-    session = await get_session(request)
+    # session = await get_session(request) # Maybe because of session??
     ws = web.WebSocketResponse()
+
     await ws.prepare(request)
-    request.app['websockets'].add(ws)
+
+
+    request.app['sockets'].append(ws)
 
     async for msg in ws:
         data = await msg.receive_json()
-        ws.send_json(await methods.call(data))
+        ws.send_json(await methods.call(request, data))
+
+    request.app['sockets'].remove(ws)
 
 
 
