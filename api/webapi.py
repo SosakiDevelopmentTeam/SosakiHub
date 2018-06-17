@@ -46,11 +46,19 @@ class APIMethods(Sequence):
 routes = web.RouteTableDef()
 methods = APIMethods()
 
+cb_id = lambda d: d.get('cb_id', 0)
 
 async def on_shutdown(app: web.Application):
     for ws in set(app['sockets']):
         await ws.close(code=WSCloseCode.GOING_AWAY, message="Hub shutting down...")
 
+
+async def check_password(request, data):
+    creds = await request.app['db'].execute('SELECT password, id FROM users WHERE username = (?)', (data['login'],))
+    if len(creds):
+        if creds[0][0] == sha512(data['password']):
+            return creds[0][1]
+    return False
 
 @routes.get("/")
 async def ws_handler(request: web.Request):
@@ -88,22 +96,17 @@ async def ws_handler(request: web.Request):
 async def authorize(request: web.Request, data: dict):
     session = await get_session(request)
     if 'verified' in session and session['verified']:
-        return {"type": "message", "content": "Already logged, opening panel..."}
+        return {"type": "message", "content": "Already logged, opening panel...", "cb_id": cb_id(data)}
 
-    if 'login' not in data or not 'password' in data:
-        return {"type": "error", "content": "Not enough parameters"}
+    if 'login' not in data or 'password' not in data:
+        return {"type": "error", "content": "Not enough parameters", "cb_id": cb_id(data)}
 
-    creds = await request.app['db'].execute('SELECT password, id FROM users WHERE username = (?)', (data['login'],))
+    user_id = check_password(request, data)
+    if user_id:
+        session['verified'] = True
+        return {"type": "user_id", "content": f"Welcome, {data['login']}", "user_id": user_id, "cb_id": cb_id(data)}
 
-    if len(creds):
-        logging.debug(f'Entered password: {data["password"]}, DB password: {creds[0][0]}')
-        if creds[0][0] == sha512(data['password']):
-            session['verified'] = True
-            return {"type": "user_id", "content": f"Welcome, {data['login']}", "user_id": creds[0][1],
-                    "cb_id": data.get('cb_id', 0)}
-        else:
-            session['verified'] = False
-
-    return {"type": "error", "content": f"Wrong login or password"}
+    session['verified'] = False
+    return {"type": "error", "content": "Wrong login or password", "cb_id": cb_id(data)}
 
 # TODO: Add new methods

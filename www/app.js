@@ -1,11 +1,16 @@
 import z from './lib/zombular.js';
 import './lib/jquery-3.3.1.min.js'
 import './lib/semantic.min.js';
-import {Button, Input, Icon} from './lib/views.js';
+import {Button, Input, Icon, Message} from './lib/views.js';
 import API from './lib/api.js'
 
 let username = z.Val('');
 let password = z.Val('');
+
+
+let message_text = z.Val('');
+let message_modifiers = {hidden: true, negative: true}
+let message_object = undefined
 
 let load = true;
 
@@ -20,13 +25,11 @@ api.onmessage((msg) => {
     switch (data.type) {
         case "user_id":
             user_id = data['user_id'];
-            api._call_cb(data['cb_id'], data);
-            break;
         case "message":
-            console.log(data['content']);
-            break;
         case "error":
-            throw data['content'];
+            if ('cb_id' in data)
+                api._call_cb(data['cb_id'], data);
+            break;
         default:
             throw "No such message handle.";
 
@@ -38,7 +41,8 @@ const CPMain = z('');
 
 const LoginPage = z._div['align-center'](
     z._div.center.aligned(
-        z._h1.ui.header.center.aligned({style: 'margin-top: 2%; color: #c5c5c5;'}, 'Log in')   ,
+        z._h1.ui.header.center.aligned({style: 'margin-top: 2%; color: #c5c5c5;'}, 'Log in'),
+        centered(z({is: '', on$created: (e) => message_object = e.target}, Message('Notification', message_text, message_modifiers, Icon("close")))),
         centered(Input(username, 'Login', {large: true})),
         centered(Input(password, 'Password', {large: true}, 'password')),
         centered(Button(
@@ -46,7 +50,21 @@ const LoginPage = z._div['align-center'](
                 z('.visible.content', 'Login'),
                 z('.hidden.content', Icon({'right arrow': true}))
             ),
-            () => (load = false, api.login(username.get(), password.get(), (data) => (z.setBody(CPMain), z.update())), z.update()),
+            () => (load = false, api.login(username.get(), password.get(), (data) => {
+                switch (data.type) {
+                    case "error":
+                        message_text = data.content;
+                        message_modifiers.hidden = false;
+                        $(message_object).transition("fade in");
+                        load = true;
+                        break;
+                    default:
+                        load = true;
+                        //TODO: Make more handlers
+                }
+                z.setBody(CPMain);
+                z.update();
+            }), z.update()),
             {animated: () => load, medium: true, loading: () => !load}
         )),
     )

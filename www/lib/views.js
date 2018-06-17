@@ -75,3 +75,12 @@ export const Input = (val, placeholder, modifiers, type = "text") => z({
         }, placeholder
     })
 );
+
+export const Message = (header, text, modifiers, icon) => {
+    z._div.ui.message(
+        {class: modifiers},
+        icon,
+        z._div.header(header),
+        z._p(text)
+        )
+};
