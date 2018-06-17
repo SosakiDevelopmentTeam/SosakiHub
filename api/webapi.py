@@ -68,7 +68,6 @@ async def ws_handler(request: web.Request):
                 logging.error(f'Error while loading JSON: {e.__str__()}')
                 break
             await ws.send_json(await methods.call(request, data))
-            return ws
 
         elif msg.type == WSMsgType.CLOSE:
             break
