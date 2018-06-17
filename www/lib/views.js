@@ -70,7 +70,7 @@ export const Input = (val, placeholder, modifiers, type = "text") => z({
         is: 'input',
         class: modifiers,
         value: val.get, type,
-        oninput: () => {
+        oninput: (e) => {
             val.set(e.target.value), z.update()
         }, placeholder
     })
