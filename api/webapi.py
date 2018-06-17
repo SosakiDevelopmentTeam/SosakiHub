@@ -1,4 +1,4 @@
-from aiohttp import web, WSCloseCode
+from aiohttp import web, WSCloseCode, WSMsgType
 from aiohttp_session import get_session
 import json, logging
 from hashlib import sha512 as _sha512
@@ -58,10 +58,26 @@ async def ws_handler(request: web.Request):
     if ws not in request.app['sockets']:
         request.app['sockets'].append(ws)
 
-    data = await ws.receive_json()
-    await ws.send_json(await methods.call(request, data))
+    async for msg in ws:
+        if msg.type == WSMsgType.TEXT:
+            data = None
 
-    return ws
+            try:
+                data = json.loads(msg.data)
+            except Exception as e:
+                logging.error(f'Error while loading JSON: {e.__str__()}')
+                break
+            await ws.send_json(await methods.call(request, data))
+            yield ws
+        elif msg.type == WSMsgType.CLOSE:
+            break
+        else:
+            continue
+
+    await ws.close()
+    request.app['sockets'].remove(ws)
+
+    yield ws
 
 
 @methods.add("login")
