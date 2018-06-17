@@ -59,8 +59,9 @@ async def ws_handler(request: web.Request):
         request.app['sockets'].append(ws)
 
     data = await ws.receive_json()
-    ws.send_json(await methods.call(request, data))
+    await ws.send_json(await methods.call(request, data))
 
+    return ws
 
 
 @methods.add("login")
@@ -72,7 +73,7 @@ async def authorize(request: web.Request, data: dict):
     if 'login' not in data or not 'password' in data:
         return {"error": "Not enough parameters"}
 
-    password = await request.app['db'].execute("SELECT password FROM users WHERE username = (?)", (data['login'], ))
+    password = await request.app['db'].execute('SELECT password FROM users WHERE username = (?)', (data['login'],))
 
     if len(password):
         if password[0] == sha512(data['password']):
