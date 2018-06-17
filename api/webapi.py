@@ -48,7 +48,7 @@ async def on_shutdown(app: web.Application):
     for ws in set(app['websockets']):
         await ws.close(code=WSCloseCode.GOING_AWAY, message="Hub shutting down...")
 
-@routes.get("/sosaki_socket")
+@routes.get("/")
 async def ws_handler(request: web.Request):
     session = await get_session(request)
     ws = web.WebSocketResponse()
