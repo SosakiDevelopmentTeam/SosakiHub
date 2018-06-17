@@ -4,6 +4,5 @@ aiodns
 aiohttp
 aiosqlite
 cryptography
-aiohttp_session
 uvloop
 gitpython

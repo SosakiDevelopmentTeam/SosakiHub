@@ -1,9 +1,6 @@
 import asyncio
 import base64
 
-from aiohttp_session import setup
-from aiohttp_session.cookie_storage import EncryptedCookieStorage
-
 from cryptography import fernet
 
 from api import *
@@ -14,11 +11,7 @@ if not is_win:
 
 
 def run_app(loop):
-    app = web.Application(loop=loop)
-    # Sessions storage key generation
-    fernet_key = fernet.Fernet.generate_key()
-    secret_key = base64.urlsafe_b64decode(fernet_key)
-    setup(app, EncryptedCookieStorage(secret_key, cookie_name="sosaki_session", max_age=300))
+    app = web.Application()
 
     app['db'] = DB("database.db")
     app['sockets'] = []

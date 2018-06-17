@@ -5,4 +5,9 @@ CREATE TABLE "users" (
 	`password`	TEXT,
 	`role`	INTEGER DEFAULT 0
 );
+CREATE TABLE "sessions" (
+	`user_id`	INTEGER,
+	`removal_time`	INTEGER,
+	`session`	TEXT
+);
 COMMIT;

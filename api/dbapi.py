@@ -14,3 +14,4 @@ class DB:
                 await db.commit()
             await cur.close()
             return data
+

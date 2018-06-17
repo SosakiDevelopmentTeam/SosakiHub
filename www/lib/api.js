@@ -1,7 +1,10 @@
+import { get } from "./storage.js"
+
 export default class API {
 
     constructor(address) {
         this.socket = new WebSocket(address);
+
         this.id = 0;
         this.callbacks = {};
     }
@@ -21,7 +24,7 @@ export default class API {
     }
 
     _call_cb(id, data) {
-        if (id) {
+        if (id !== 0) {
             this.callbacks[id](data);
             delete this.callbacks[id];
         }
@@ -29,6 +32,12 @@ export default class API {
 
     login(login, password, cb) {
         let msg = {method: "login", login: login, password: password};
+        this._cb_check(msg, cb);
+        this.socket.send(JSON.stringify(msg));
+    }
+
+    check_auth(cb) {
+        let msg = {method: "check_auth", session: get("session")};
         this._cb_check(msg, cb);
         this.socket.send(JSON.stringify(msg));
     }
