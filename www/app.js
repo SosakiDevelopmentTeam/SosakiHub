@@ -35,11 +35,12 @@ api.onmessage((msg) => {
 
     }
 
+
 }); // Handler that shows what comes from server!
 
 const CPMain = z('');
 
-const LoginPage = z._div['align-center'](
+const LoginPage = z._div['align-center']({style: "display: flex; height: 100%; justify-content: center; "},
     z._div.center.aligned(
         z._h1.ui.header.center.aligned({style: 'margin-top: 2%; color: #c5c5c5;'}, 'Log in'),
         centered(z({
@@ -60,7 +61,7 @@ const LoginPage = z._div['align-center'](
                         z.update();
                         break;
                     case 'error':
-                        message_text = data.content;
+                        message_text.set(data.content);
                         message_modifiers.hidden = false;
                         $(message_object).transition("fade in");
                         load = true;

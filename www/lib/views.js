@@ -80,5 +80,5 @@ export const Message = (header, text, modifiers, icon) => z._div.ui.message(
         {class: modifiers},
         icon,
         z._div.header(header),
-        z._p(text)
+        z._p(text.get)
 );
