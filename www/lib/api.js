@@ -15,8 +15,8 @@ export default class API {
 
     _cb_check(msg, cb) {
         if (cb) {
-            this.callbacks[++id] = cb;
-            msg['cb_id'] = id;
+            this.callbacks[++this.id] = cb;
+            msg['cb_id'] = this.id;
         }
     }
 
