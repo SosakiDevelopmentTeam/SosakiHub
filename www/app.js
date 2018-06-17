@@ -9,8 +9,8 @@ let password = z.Val('');
 
 
 let message_text = z.Val('');
-let message_modifiers = {hidden: true, negative: true}
-let message_object = undefined
+let message_modifiers = {hidden: true, negative: true, compact: true};
+let message_object = undefined;
 
 let load = true;
 
@@ -42,7 +42,10 @@ const CPMain = z('');
 const LoginPage = z._div['align-center'](
     z._div.center.aligned(
         z._h1.ui.header.center.aligned({style: 'margin-top: 2%; color: #c5c5c5;'}, 'Log in'),
-        centered(z({is: '', on$created: (e) => message_object = e.target}, Message('Notification', message_text, message_modifiers, Icon("close")))),
+        centered(z({
+            is: '',
+            on$created: (e) => message_object = e.target
+        }, Message('Notification', message_text, message_modifiers, Icon("close", () => $(message_object).transition("fade out"))))),
         centered(Input(username, 'Login', {large: true})),
         centered(Input(password, 'Password', {large: true}, 'password')),
         centered(Button(
@@ -66,7 +69,7 @@ const LoginPage = z._div['align-center'](
                     default:
                         load = true;
                         z.update();
-                        //TODO: Make more handlers
+                    //TODO: Make more handlers
                 }
             }), z.update()),
             {animated: () => load, medium: true, loading: () => !load}

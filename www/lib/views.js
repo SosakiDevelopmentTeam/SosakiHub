@@ -46,7 +46,7 @@ z.Node(document.head, Styles);
 export const range = length => [...Array(length).keys()];
 
 export const Segment = (...c) => z.ui.basic.segment(c);
-export const Icon = name => z._i.icon({class: name});
+export const Icon = (name, cb) => z._i.icon({class: name, onclick: cb});
 
 export const Button = (text, action, modifiers) => z({
     is: '.ui.button',
@@ -76,11 +76,9 @@ export const Input = (val, placeholder, modifiers, type = "text") => z({
     })
 );
 
-export const Message = (header, text, modifiers, icon) => {
-    z._div.ui.message(
+export const Message = (header, text, modifiers, icon) => z._div.ui.message(
         {class: modifiers},
         icon,
         z._div.header(header),
         z._p(text)
-        )
-};
+);
