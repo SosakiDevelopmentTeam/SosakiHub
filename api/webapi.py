@@ -76,8 +76,8 @@ async def authorize(request: web.Request, data: dict):
     password = await request.app['db'].execute('SELECT password FROM users WHERE username = (?)', (data['login'],))
 
     if len(password):
-        logging.debug(f'Entered password: {data["password"]}, DB password: {password[0]}')
-        if password[0] == sha512(data['password']):
+        logging.debug(f'Entered password: {data["password"]}, DB password: {password[0][0]}')
+        if password[0][0] == sha512(data['password']):
             session['verified'] = True
             return {"type": "message", "content": f"Welcome, {data['login']}"}
         else:
