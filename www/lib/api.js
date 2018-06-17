@@ -4,10 +4,10 @@ export default class API {
         this.socket = new WebSocket(address);
     }
 
-    onopen(handler)   { this.socket.onopen(handler);    }
-    onclose(handler)  { this.socket.onclose(handler);   }
-    onerror(handler)  { this.socket.onerror(handler);   }
-    onmessage(handler){ this.socket.onmessage(handler); }
+    onopen(handler)   { this.socket.onopen    = handler;    }
+    onclose(handler)  { this.socket.onclose   = handler;   }
+    onerror(handler)  { this.socket.onerror   = handler;   }
+    onmessage(handler){ this.socket.onmessage = handler; }
 
     // TODO: Add more methods
     
