@@ -34,7 +34,7 @@ class APIMethods(Sequence):
 
     async def call(self, request, data):
         if 'method' not in data:
-            return {"error": "No such method"}
+            return {"type": "error", "content": "No such method"}
 
         if data['method'] in self._items:
             return await self._items[data['method']](request, data)
@@ -65,7 +65,7 @@ async def ws_handler(request: web.Request):
 async def authorize(request: web.Request, data: dict):
     session = await get_session(request)
     if session['verified']:
-        return {"message": "Already logged, opening panel..."}
+        return {"type": "message", "content": "Already logged, opening panel..."}
 
     if 'login' not in data or not 'password' in data:
         return {"error": "Not enough parameters"}
@@ -75,8 +75,8 @@ async def authorize(request: web.Request, data: dict):
     if len(password):
         if password[0] == sha512(data['password']):
             session['verified'] = True
-            return {"message": f"Welcome, {data['login']}"}
+            return {"type": "message", "content": f"Welcome, {data['login']}"}
         else:
             session['verified'] = False
 
-    return {"message": f"Wrong login or password"}
+    return {"type": "message", "content": f"Wrong login or password"}

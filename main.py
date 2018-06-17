@@ -10,6 +10,10 @@ from api import *
 from hub_repos import *
 import weakref
 
+if not is_win:
+    import uvloop
+
+
 def run_app(loop):
     app = web.Application(loop=loop)
     # Sessions storage key generation
@@ -30,6 +34,7 @@ if __name__ == "__main__":
         loop = asyncio.ProactorEventLoop()
         asyncio.set_event_loop(loop)
     else:
+        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         loop = asyncio.get_event_loop()
 
     logging.basicConfig(level=logging.DEBUG,
