@@ -95,9 +95,9 @@ async def authorize(request: web.Request, data: dict):
 
     creds = await request.app['db'].execute('SELECT password, id FROM users WHERE username = (?)', (data['login'],))
 
-    if len(data):
+    if len(creds):
         logging.debug(f'Entered password: {data["password"]}, DB password: {creds[0][0]}')
-        if data[0][0] == sha512(data['password']):
+        if creds[0][0] == sha512(data['password']):
             session['verified'] = True
             return {"type": "user_id", "content": f"Welcome, {data['login']}", "user_id": creds[0][1],
                     "cb_id": data.get('cb_id', 0)}
