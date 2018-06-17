@@ -15,6 +15,8 @@ const bg = (c, color) => z._div({style: `background-color: ${color}`}, c);
 // TODO: Make popup message for onmessage
 const api = new API("ws://panel.sosaki.ru/socket"); // Make WS connection to server
 
+api.onmessage((msg) => console.log(JSON.parse(msg.data))); // Handler that shows what comes from server!
+
 const CPMain = z('');
 
 const LoginPage = z._div['align-center'](
