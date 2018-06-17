@@ -60,7 +60,7 @@ const LoginPage = z._div['align-center']({style: "display: flex; height: 100%; j
                     case 'user_id':
                         $(login_form).transition({
                             animation: "horizontal flip",
-                            onComplete: z.setBody(CPMain)
+                            onComplete: () => z.setBody(CPMain)
                         });
                         break;
                     case 'error':
