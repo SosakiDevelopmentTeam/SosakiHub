@@ -13,5 +13,4 @@ class DB:
             if commit:
                 await db.commit()
             await cur.close()
-            await db.close()
             return data

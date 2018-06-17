@@ -61,9 +61,11 @@ const LoginPage = z._div['align-center'](
                         message_modifiers.hidden = false;
                         $(message_object).transition("fade in");
                         load = true;
+                        z.update();
                         break;
                     default:
                         load = true;
+                        z.update();
                         //TODO: Make more handlers
                 }
             }), z.update()),
