@@ -11,7 +11,7 @@ class DB:
             cur = await db.execute(command, params)
             data = [el for el in await cur.fetchall()]
             if commit:
-                self.database.commit()
+                await self.database.commit()
             await cur.close()
 
             return data

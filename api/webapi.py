@@ -51,7 +51,7 @@ async def on_shutdown(app: web.Application):
 @routes.get("/")
 async def ws_handler(request: web.Request):
     session = await get_session(request) # Maybe because of session??
-    ws = web.WebSocketResponse()
+    ws = web.WebSocketResponse(autoclose=False)
 
     await ws.prepare(request)
 
