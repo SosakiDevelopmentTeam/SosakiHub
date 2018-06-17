@@ -68,7 +68,8 @@ async def ws_handler(request: web.Request):
                 logging.error(f'Error while loading JSON: {e.__str__()}')
                 break
             await ws.send_json(await methods.call(request, data))
-            yield ws
+            return ws
+
         elif msg.type == WSMsgType.CLOSE:
             break
         else:
@@ -77,7 +78,7 @@ async def ws_handler(request: web.Request):
     await ws.close()
     request.app['sockets'].remove(ws)
 
-    yield ws
+    return ws
 
 
 @methods.add("login")
