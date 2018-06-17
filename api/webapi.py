@@ -101,7 +101,7 @@ async def authorize(request: web.Request, data: dict):
     if 'login' not in data or 'password' not in data:
         return {"type": "error", "content": "Not enough parameters", "cb_id": cb_id(data)}
 
-    user_id = check_password(request, data)
+    user_id = await check_password(request, data)
     if user_id:
         session['verified'] = True
         return {"type": "user_id", "content": f"Welcome, {data['login']}", "user_id": user_id, "cb_id": cb_id(data)}
