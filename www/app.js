@@ -41,8 +41,8 @@ api.onmessage((msg) => {
 
 const CPMain = z('');
 
-const LoginPage = z._div['align-center']({on$created: (e) => login_form = e.target ,style: "display: flex; height: 100%; justify-content: center;"},
-    z._div.center.aligned(
+const LoginPage = z._div['align-center']({style: "display: flex; height: 100%; justify-content: center;"},
+    z._div.center.aligned({on$created: (e) => login_form = e.target},
         z._h1.ui.header.center.aligned({style: 'margin-top: 2%; color: #c5c5c5;'}, 'Log in'),
         centered(z({
             is: '',
