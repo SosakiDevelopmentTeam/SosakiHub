@@ -13,9 +13,7 @@ export default class API {
     
     login(login, password) {
         let msg = {method: "login", login: login, password: password};
-        if (this.socket.CLOSED)
-            throw "Socket is closed!";
-        msg.send(JSON.stringify(msg));
+        this.socket.send(JSON.stringify(msg));
     }
 
 };
