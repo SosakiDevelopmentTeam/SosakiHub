@@ -80,3 +80,5 @@ async def authorize(request: web.Request, data: dict):
             session['verified'] = False
 
     return {"type": "message", "content": f"Wrong login or password"}
+
+# TODO: Add new methods

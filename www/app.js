@@ -12,6 +12,7 @@ let load = true;
 const centered = (c, styles) => z({is: '.centered-block', style: styles ? styles : ''}, c);
 const bg = (c, color) => z._div({style: `background-color: ${color}`}, c);
 
+// TODO: Make popup message for onmessage
 const api = new API("ws://sosaki.ru/sosaki_socket"); // Make WS connection to server
 
 const CPMain = z('');

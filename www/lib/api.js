@@ -9,6 +9,8 @@ export default class API {
     onerror(handler)  { this.socket.onerror(handler);   }
     onmessage(handler){ this.socket.onmessage(handler); }
 
+    // TODO: Add more methods
+    
     login(login, password) {
         let msg = {method: "login", login: login, password: password};
         if (this.socket.CLOSED)
