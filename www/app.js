@@ -16,6 +16,7 @@ let load = true;
 
 const centered = (c, styles) => z({is: '.centered-block', style: styles ? styles : ''}, c);
 let user_id = undefined;
+let login_form = undefined;
 
 // TODO: Make popup message for onmessage
 const api = new API("ws://panel.sosaki.ru/socket"); // Make WS connection to server
@@ -40,7 +41,7 @@ api.onmessage((msg) => {
 
 const CPMain = z('');
 
-const LoginPage = z._div['align-center']({style: "display: flex; height: 100%; justify-content: center; "},
+const LoginPage = z._div['align-center']({on$created: (e) => login_form = e.target ,style: "display: flex; height: 100%; justify-content: center;"},
     z._div.center.aligned(
         z._h1.ui.header.center.aligned({style: 'margin-top: 2%; color: #c5c5c5;'}, 'Log in'),
         centered(z({
@@ -57,13 +58,16 @@ const LoginPage = z._div['align-center']({style: "display: flex; height: 100%; j
             () => (load = false, api.login(username.get(), password.get(), (data) => {
                 switch (data.type) {
                     case 'user_id':
+                        $(login_form).transition("horizontal flip");
                         z.setBody(CPMain);
                         z.update();
+
                         break;
                     case 'error':
                         message_text.set(data.content);
                         message_modifiers.hidden = false;
                         $(message_object).transition("fade in");
+                        $(login_form).transition("shake");
                         load = true;
                         z.update();
                         break;
