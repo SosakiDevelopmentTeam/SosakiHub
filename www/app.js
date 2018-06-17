@@ -10,12 +10,29 @@ let password = z.Val('');
 let load = true;
 
 const centered = (c, styles) => z({is: '.centered-block', style: styles ? styles : ''}, c);
-const bg = (c, color) => z._div({style: `background-color: ${color}`}, c);
+let user_id = undefined;
 
 // TODO: Make popup message for onmessage
 const api = new API("ws://panel.sosaki.ru/socket"); // Make WS connection to server
 
-api.onmessage((msg) => console.log(JSON.parse(msg.data))); // Handler that shows what comes from server!
+api.onmessage((msg) => {
+    let data = JSON.parse(msg.data);
+    switch (data.type) {
+        case "user_id":
+            user_id = data['user_id'];
+            api._call_cb(data['cb_id'], data);
+            break;
+        case "message":
+            console.log(data['content']);
+            break;
+        case "error":
+            throw data['content'];
+        default:
+            throw "No such message handle.";
+
+    }
+
+}); // Handler that shows what comes from server!
 
 const CPMain = z('');
 
@@ -29,7 +46,7 @@ const LoginPage = z._div['align-center'](
                 z('.visible.content', 'Login'),
                 z('.hidden.content', Icon({'right arrow': true}))
             ),
-            () => (load = false, api.login(username.get(), password.get()), z.update()),
+            () => (load = false, api.login(username.get(), password.get(), (data) => (z.setBody(CPMain), z.update())), z.update()),
             {animated: () => load, medium: true, loading: () => !load}
         )),
     )

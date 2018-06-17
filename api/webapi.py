@@ -6,8 +6,10 @@ from collections.abc import Sequence
 
 sha512 = lambda x: _sha512(x.encode('utf-8')).hexdigest()
 
+
 class APIMethods(Sequence):
     """API methods table"""
+
     def __init__(self):
         self._items = {}
 
@@ -30,6 +32,7 @@ class APIMethods(Sequence):
         def inner(handler):
             self._items[name] = handler
             return handler
+
         return inner
 
     async def call(self, request, data):
@@ -40,17 +43,18 @@ class APIMethods(Sequence):
             return await self._items[data['method']](request, data)
 
 
-
 routes = web.RouteTableDef()
 methods = APIMethods()
+
 
 async def on_shutdown(app: web.Application):
     for ws in set(app['sockets']):
         await ws.close(code=WSCloseCode.GOING_AWAY, message="Hub shutting down...")
 
+
 @routes.get("/")
 async def ws_handler(request: web.Request):
-    session = await get_session(request) # Maybe because of session??
+    session = await get_session(request)  # Maybe because of session??
     ws = web.WebSocketResponse(autoclose=False)
 
     await ws.prepare(request)
@@ -87,18 +91,19 @@ async def authorize(request: web.Request, data: dict):
         return {"type": "message", "content": "Already logged, opening panel..."}
 
     if 'login' not in data or not 'password' in data:
-        return {"error": "Not enough parameters"}
+        return {"type": "error", "content": "Not enough parameters"}
 
-    password = await request.app['db'].execute('SELECT password FROM users WHERE username = (?)', (data['login'],))
+    data = await request.app['db'].execute('SELECT password, id FROM users WHERE username = (?)', (data['login'],))
 
-    if len(password):
-        logging.debug(f'Entered password: {data["password"]}, DB password: {password[0][0]}')
-        if password[0][0] == sha512(data['password']):
+    if len(data):
+        logging.debug(f'Entered password: {data["password"]}, DB password: {data[0][0]}')
+        if data[0][0] == sha512(data['password']):
             session['verified'] = True
-            return {"type": "message", "content": f"Welcome, {data['login']}"}
+            return {"type": "user_id", "content": f"Welcome, {data['login']}", "user_id": data[0][1],
+                    "cb_id": data.get('cb_id', 0)}
         else:
             session['verified'] = False
 
-    return {"type": "message", "content": f"Wrong login or password"}
+    return {"type": "error", "content": f"Wrong login or password"}
 
 # TODO: Add new methods
