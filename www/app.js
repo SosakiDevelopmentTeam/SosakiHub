@@ -58,10 +58,10 @@ const LoginPage = z._div['align-center']({style: "display: flex; height: 100%; j
             () => (load = false, api.login(username.get(), password.get(), (data) => {
                 switch (data.type) {
                     case 'user_id':
-                        $(login_form).transition("horizontal flip");
-                        z.setBody(CPMain);
-                        z.update();
-
+                        $(login_form).transition({
+                            animation: "horizontal flip",
+                            onComplete: z.setBody(CPMain)
+                        });
                         break;
                     case 'error':
                         message_text.set(data.content);
