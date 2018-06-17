@@ -52,7 +52,11 @@ const LoginPage = z._div['align-center'](
             ),
             () => (load = false, api.login(username.get(), password.get(), (data) => {
                 switch (data.type) {
-                    case "error":
+                    case 'user_id':
+                        z.setBody(CPMain);
+                        z.update();
+                        break;
+                    case 'error':
                         message_text = data.content;
                         message_modifiers.hidden = false;
                         $(message_object).transition("fade in");
@@ -62,8 +66,6 @@ const LoginPage = z._div['align-center'](
                         load = true;
                         //TODO: Make more handlers
                 }
-                z.setBody(CPMain);
-                z.update();
             }), z.update()),
             {animated: () => load, medium: true, loading: () => !load}
         )),
