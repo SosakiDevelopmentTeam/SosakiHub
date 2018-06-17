@@ -59,7 +59,7 @@ async def ws_handler(request: web.Request):
     request.app['sockets'].append(ws)
 
     async for msg in ws:
-        data = await msg.receive_json()
+        data = await ws.receive_json()
         ws.send_json(await methods.call(request, data))
 
     request.app['sockets'].remove(ws)
