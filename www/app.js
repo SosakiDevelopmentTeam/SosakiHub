@@ -4,7 +4,7 @@ import './lib/semantic.min.js';
 import {Button, Input, Icon, Message, Sidebar} from './lib/views.js';
 import API from './lib/api.js'
 import {set, remove} from './lib/storage.js'
-import { Chart } from "./lib/Chart.bundle.min.js"
+import Chart from "./lib/Chart.bundle.min.js"
 
 
 
