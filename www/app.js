@@ -1,10 +1,10 @@
-import z from './lib/zombular.js';
-import './lib/jquery-3.3.1.min.js'
-import './lib/semantic.min.js';
-import {Button, Input, Icon, Message, Sidebar} from './lib/views.js';
-import API from './lib/api.js'
-import {set, remove} from './lib/storage.js'
-import Chart from "./lib/Chart.bundle.min.js"
+import z from 'lib/zombular.js';
+import 'lib/jquery-3.3.1.min.js'
+import 'lib/semantic.min.js';
+import {Button, Input, Icon, Message, Sidebar} from 'lib/views.js';
+import API from 'lib/api.js'
+import {set, remove} from 'lib/storage.js'
+import "lib/chart.js"
 
 
 
