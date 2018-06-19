@@ -26,7 +26,7 @@ let loading_object = undefined;
 let sidebar_object = undefined;
 let target_page = undefined;
 let loading = true;
-const api = new API(`${location.protocol === 'https:' ? 'wss': ws}://panel.sosaki.ru/socket`); // Make WS connection to server
+const api = new API(`${location.protocol === 'https:' ? 'wss': 'ws'}://panel.sosaki.ru/socket`); // Make WS connection to server
 
 api.onmessage((msg) => {
     let data = JSON.parse(msg.data);
