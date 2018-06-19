@@ -54,7 +54,7 @@ async def on_shutdown(app):
 
 methods = APIMethods()
 
-@routes.get("/")
+@routes.get("/socket")
 class Socket(web.View):
 
     async def get(self):
