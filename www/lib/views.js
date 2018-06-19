@@ -2,6 +2,7 @@ import z from './zombular.js';
 
 const Styles = z('style', `
 @import url('./lib/semantic.min.css');
+@import url('./lib/c3.min.css');
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400);
 
 * { margin: 0; padding: 0; list-style-type: none; }
@@ -81,4 +82,9 @@ export const Message = (header, text, modifiers, icon) => z._div.ui.message(
         icon,
         z._div.header(header),
         z._p(text.get)
+);
+
+export const Sidebar = (header, options, params) => z._div.ui.sidebar(
+    params,
+    () => options.map(option => z._a.item({'onclick': option.cb}, option.icon, option.name))
 );

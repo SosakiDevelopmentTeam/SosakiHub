@@ -1,9 +1,12 @@
 import z from './lib/zombular.js';
 import './lib/jquery-3.3.1.min.js'
 import './lib/semantic.min.js';
-import {Button, Input, Icon, Message, Segment} from './lib/views.js';
+import {Button, Input, Icon, Message, Sidebar} from './lib/views.js';
 import API from './lib/api.js'
 import {set, remove} from './lib/storage.js'
+import { Chart } from "./lib/Chart.bundle.min"
+
+
 
 let username = z.Val('');
 let password = z.Val('');
@@ -13,15 +16,17 @@ let message_text = z.Val('');
 let message_modifiers = {hidden: true, negative: true, compact: true};
 let message_object = undefined;
 
-let load = true;
+let button_load = true;
 
 const centered = (c, styles) => z({is: '.centered-block', style: styles ? styles : ''}, c);
 let user_id = undefined;
 let login_form = undefined;
 let button_object = undefined;
 let loading_object = undefined;
+let sidebar_object = undefined;
 let target_page = undefined;
-const api = new API("ws://panel.sosaki.ru/socket"); // Make WS connection to server
+let loading = true;
+const api = new API(`${location.protocol === 'https:' ? 'wss': ws}://panel.sosaki.ru/socket`); // Make WS connection to server
 
 api.onmessage((msg) => {
     let data = JSON.parse(msg.data);
@@ -44,18 +49,15 @@ api.onmessage((msg) => {
 }); // Handler that shows what comes from server!
 
 api.onopen(() => {
-    let transit = (t) => $(loading_object).transition({
-                animation: "fade",
-                onStart: () => (target_page = t, z.update())
-            });
-
-    api.check_auth(
-        (data) => {
-            data.type === "user_id" ? transit(CPMain) : transit(LoginPage);
+        let transit = (t) => $(loading_object).transition({
+            animation: "fade",
+            onStart: () => (target_page = t),
+            onComplete: () => (loading = false, z.update())
         });
-}
-);
 
+        api.check_auth((data) => (console.log("called"), data.type === "user_id" ? transit(CPMain) : transit(LoginPage)));
+    }
+);
 
 
 function logged_cb(data) {
@@ -72,11 +74,11 @@ function logged_cb(data) {
             message_modifiers.hidden = false;
             $(message_object).transition("fade in");
             $(login_form).transition("shake");
-            load = true;
+            button_load = true;
             z.update();
             break;
         default:
-            load = true;
+            button_load = true;
             z.update();
         //TODO: Make more handlers
 
@@ -84,21 +86,43 @@ function logged_cb(data) {
 }
 
 function button_work() {
-    load = false;
+    button_load = false;
     api.login(username.get(), password.get(), logged_cb);
     z.update();
 }
 
 let login_form_enter = (e) => {
-        login_form = e.target;
-        e.target.addEventListener("keyup", function(event) {
-            event.preventDefault();
-            if (event.keyCode === 13)
-                button_work();
-        });
-    };
+    login_form = e.target;
+    e.target.addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode === 13)
+            button_work();
+    });
+};
 
-const CPMain = z('');
+let chart_object = undefined;
+let created_chart = undefined;
+let create_chart = (objects) => {
+    created_chart = c3.generate({
+        bindto: chart_object,
+        data: objects
+    })
+};
+
+const CPMain = z('',
+    z._div.pusher(
+        z._div({on$created: (e) => chart_object = e.target})
+    ),
+    Sidebar(z.ui.logo("Simple header"),
+        [
+            {name: 'Add', icon: Icon("plus green")}
+        ],
+        {
+            class: {vertical: true, visible: true, menu: true},
+            on$created: e => (sidebar_object = e.target, $(sidebar_object).sidebar("setting", "transition", "scale down"))
+        }
+    )
+);
 
 const LoginPage = z._div['align-center']({style: "display: flex; height: 100%; justify-content: center;"},
     z({is: "form.center.aligned", on$created: login_form_enter},
@@ -115,7 +139,7 @@ const LoginPage = z._div['align-center']({style: "display: flex; height: 100%; j
                 z('.hidden.content', Icon({'right arrow': true}))
             ),
             button_work,
-            {animated: () => load, medium: true, loading: () => !load})
+            {animated: () => button_load, medium: true, loading: () => !button_load})
         )
     )
 );
@@ -128,7 +152,7 @@ const Loading = z._div({on$created: (e) => loading_object = e.target, style: "wi
 );
 
 const Body = z('',
-    Loading,
+    () => loading ? Loading : undefined,
     () => target_page
 );
 
